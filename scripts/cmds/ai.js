@@ -9,51 +9,50 @@ module.exports = {
     name: "gemini",
     aliases: ["ai", "chat"],
     version: "0.0.2",
-    author: "ArYAN",
+    author: "ArYAN",//modifié par Christus
     countDown: 3,
     role: 0,
-    shortDescription: "Ask Gemini AI (Text or Image)",
-    longDescription: "Talk with Gemini AI. Reply to an image to ask about it.",
+    shortDescription: "💬 Pose ta question à Gemini AI (Texte ou Image)",
+    longDescription: "🧠 Discute avec Gemini AI. Réponds à une image pour poser une question dessus.",
     category: "AI",
-    guide: "/gemini [your question] (Reply to an image to use Vision)"
+    guide: "/gemini [ta question] (Répondre à une image pour utiliser la Vision)"
   },
 
   onStart: async function({ api, event, args }) {
-    const p = args.join(" ");
-    if (!p) return api.sendMessage("❌ Please provide a question or prompt.", event.threadID, event.messageID);
+    const prompt = args.join(" ");
+    if (!prompt) return api.sendMessage("❌ Veuillez fournir une question ou un texte à envoyer à Gemini.", event.threadID, event.messageID);
 
     api.setMessageReaction("⏳", event.messageID, () => {}, true);
 
     let imageUrl = null;
     let apiUrl;
 
+    // Vérifie si on répond à une image
     if (event.messageReply && event.messageReply.attachments.length > 0) {
-      const replyAttachment = event.messageReply.attachments[0];
-      if (['photo', 'sticker', 'animated_image'].includes(replyAttachment.type)) {
-        imageUrl = replyAttachment.url;
+      const attachment = event.messageReply.attachments[0];
+      if (['photo', 'sticker', 'animated_image'].includes(attachment.type)) {
+        imageUrl = attachment.url;
       }
-    }
-    else if (event.attachments.length > 0) {
-      const msgAttachment = event.attachments[0];
-      if (['photo', 'sticker', 'animated_image'].includes(msgAttachment.type)) {
-        imageUrl = msgAttachment.url;
+    } else if (event.attachments.length > 0) {
+      const attachment = event.attachments[0];
+      if (['photo', 'sticker', 'animated_image'].includes(attachment.type)) {
+        imageUrl = attachment.url;
       }
     }
 
     try {
-      if (imageUrl) {
-        apiUrl = `${u_pro}?prompt=${encodeURIComponent(p)}&url=${encodeURIComponent(imageUrl)}`;
-      } else {
-        apiUrl = `${u_text}?prompt=${encodeURIComponent(p)}`;
-      }
+      // Choisir l'API selon texte ou image
+      apiUrl = imageUrl
+        ? `${u_pro}?prompt=${encodeURIComponent(prompt)}&url=${encodeURIComponent(imageUrl)}`
+        : `${u_text}?prompt=${encodeURIComponent(prompt)}`;
 
-      const r = await a.get(apiUrl);
-      const reply = r.data?.response;
-      if (!reply) throw new Error("No response from Gemini API.");
+      const res = await a.get(apiUrl);
+      const reply = res.data?.response;
+      if (!reply) throw new Error("Pas de réponse de l'API Gemini.");
 
       api.setMessageReaction("✅", event.messageID, () => {}, true);
 
-      api.sendMessage(reply, event.threadID, (err, i) => {
+      api.sendMessage(`💡 Gemini dit :\n\n${reply}`, event.threadID, (err, i) => {
         if (!i) return;
         if (!imageUrl) {
           global.GoatBot.onReply.set(i.messageID, { commandName: this.config.name, author: event.senderID });
@@ -61,34 +60,34 @@ module.exports = {
       }, event.messageID);
 
     } catch (e) {
-      console.error("Gemini Command Error:", e.message);
+      console.error("Erreur commande Gemini :", e.message);
       api.setMessageReaction("❌", event.messageID, () => {}, true);
-      api.sendMessage("⚠ Gemini API a somossa hoyeche.", event.threadID, event.messageID);
+      api.sendMessage("⚠ Oups ! Gemini n'a pas pu répondre, réessaye plus tard.", event.threadID, event.messageID);
     }
   },
 
   onReply: async function({ api, event, Reply }) {
     if ([api.getCurrentUserID()].includes(event.senderID)) return;
-    const p = event.body;
-    if (!p) return;
+    const prompt = event.body;
+    if (!prompt) return;
 
     api.setMessageReaction("⏳", event.messageID, () => {}, true);
 
     try {
-      const r = await a.get(`${u_text}?prompt=${encodeURIComponent(p)}`);
-      const reply = r.data?.response;
-      if (!reply) throw new Error("No response from Gemini API.");
+      const res = await a.get(`${u_text}?prompt=${encodeURIComponent(prompt)}`);
+      const reply = res.data?.response;
+      if (!reply) throw new Error("Pas de réponse de l'API Gemini.");
 
       api.setMessageReaction("✅", event.messageID, () => {}, true);
 
-      api.sendMessage(reply, event.threadID, (err, i) => {
+      api.sendMessage(`💬 Gemini répond :\n\n${reply}`, event.threadID, (err, i) => {
         if (!i) return;
         global.GoatBot.onReply.set(i.messageID, { commandName: this.config.name, author: event.senderID });
       }, event.messageID);
 
     } catch (e) {
       api.setMessageReaction("❌", event.messageID, () => {}, true);
-      api.sendMessage("⚠ Gemini API er response dite somossa hocchhe.", event.threadID, event.messageID);
+      api.sendMessage("⚠ Oups ! Impossible d'obtenir une réponse de Gemini pour le moment.", event.threadID, event.messageID);
     }
   }
 };

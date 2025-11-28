@@ -11,19 +11,19 @@ module.exports = {
     author: "Christus",
     countDown: 3,
     role: 0,
-    description: "💰 Stylish Economy System with Transfer",
+    description: "💰 Système économique stylé avec transfert",
     category: "economy",
     guide: {
-      en: "{pn} - check your balance\n{pn} @user - check others\n{pn} t @user amount - transfer"
+      fr: "{pn} - voir ton solde\n{pn} @utilisateur - voir le solde d'un autre\n{pn} t @utilisateur montant - transférer de l'argent"
     }
   },
 
   onStart: async function ({ message, event, args, usersData }) {
     const { senderID, mentions, messageReply } = event;
 
-    // --- Money formatter ---
+    // --- Formatage de l'argent ---
     const formatMoney = (amount) => {
-      if (isNaN(amount)) return "$0";
+      if (isNaN(amount)) return "0$";
       amount = Number(amount);
       const scales = [
         { value: 1e15, suffix: 'Q' },
@@ -33,18 +33,17 @@ module.exports = {
         { value: 1e3, suffix: 'k' }
       ];
       const scale = scales.find(s => amount >= s.value);
-      if (scale) return `$${(amount / scale.value).toFixed(1)}${scale.suffix}`;
-      return `$${amount.toLocaleString()}`;
+      if (scale) return `${(amount / scale.value).toFixed(1)}${scale.suffix}$`;
+      return `${amount.toLocaleString()}$`;
     };
 
-    // --- Safe avatar fetch ---
+    // --- Récupération sécurisée de l'avatar ---
     const fetchAvatar = async (userID) => {
       try {
         let avatarURL = `https://graph.facebook.com/${userID}/picture?type=large&width=500&height=500&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
         const res = await axios.get(avatarURL, { responseType: "arraybuffer", timeout: 10000 });
         return await loadImage(Buffer.from(res.data));
       } catch (e) {
-        // fallback: simple colored circle
         const size = 100;
         const canvas = createCanvas(size, size);
         const ctx = canvas.getContext("2d");
@@ -59,26 +58,26 @@ module.exports = {
       }
     };
 
-    // === TRANSFER ===
+    // === TRANSFERT D'ARGENT ===
     if (args[0]?.toLowerCase() === "t") {
       let targetID = Object.keys(mentions)[0] || messageReply?.senderID;
       const amountRaw = args.find(a => !isNaN(a));
       const amount = parseFloat(amountRaw);
 
-      if (!targetID || isNaN(amount)) return message.reply("❌ Usage: !bal t @user amount");
-      if (targetID === senderID) return message.reply("❌ You cannot send money to yourself.");
-      if (amount <= 0) return message.reply("❌ Amount must be greater than 0.");
+      if (!targetID || isNaN(amount)) return message.reply("❌ Usage : !bal t @utilisateur montant");
+      if (targetID === senderID) return message.reply("❌ Vous ne pouvez pas vous envoyer de l'argent.");
+      if (amount <= 0) return message.reply("❌ Le montant doit être supérieur à 0.");
 
       const sender = await usersData.get(senderID);
       const receiver = await usersData.get(targetID);
-      if (!receiver) return message.reply("❌ Target user not found.");
+      if (!receiver) return message.reply("❌ Utilisateur cible introuvable.");
 
       const taxRate = 5;
       const tax = Math.ceil(amount * taxRate / 100);
       const total = amount + tax;
 
       if (sender.money < total) return message.reply(
-        `❌ Not enough money.\nNeeded: ${formatMoney(total)}\nYou have: ${formatMoney(sender.money)}`
+        `❌ Fonds insuffisants.\nNécessaire : ${formatMoney(total)}\nVous avez : ${formatMoney(sender.money)}`
       );
 
       await Promise.all([
@@ -88,11 +87,15 @@ module.exports = {
 
       const receiverName = await usersData.getName(targetID);
       return message.reply(
-        `✅ Transfer Successful!\n➤ To: ${receiverName}\n➤ Sent: ${formatMoney(amount)}\n➤ Tax: ${formatMoney(tax)}\n➤ Total Deducted: ${formatMoney(total)}`
+        `✅ Transfert réussi ! 💸
+➤ Vers : ${receiverName}
+➤ Montant envoyé : ${formatMoney(amount)}
+➤ Taxe : ${formatMoney(tax)}
+➤ Total débité : ${formatMoney(total)}`
       );
     }
 
-    // === BALANCE CARD ===
+    // === CARTE DE SOLDE ===
     let targetID;
     if (Object.keys(mentions).length > 0) targetID = Object.keys(mentions)[0];
     else if (messageReply) targetID = messageReply.senderID;
@@ -106,7 +109,7 @@ module.exports = {
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext("2d");
 
-    // Background gradient
+    // --- Fond dégradé stylé ---
     const gradient = ctx.createLinearGradient(0, 0, width, height);
     gradient.addColorStop(0, "#0f2027");
     gradient.addColorStop(0.5, "#203a43");
@@ -114,16 +117,16 @@ module.exports = {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
-    // Card
+    // Carte transparente
     ctx.fillStyle = "rgba(255,255,255,0.08)";
     ctx.fillRect(40, 40, width - 80, height - 80);
 
-    // Border
+    // Bordure dorée
     ctx.strokeStyle = "#FFD700";
     ctx.lineWidth = 4;
     ctx.strokeRect(40, 40, width - 80, height - 80);
 
-    // Draw avatar circle
+    // Avatar rond
     const avatarSize = 100;
     const avatarX = 70, avatarY = 130;
     ctx.save();
@@ -133,24 +136,24 @@ module.exports = {
     ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
     ctx.restore();
 
-    // Title
+    // Titre
     ctx.fillStyle = "#FFD700";
     ctx.font = "bold 36px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("⚡ Balance Card ⚡", width / 2, 80);
+    ctx.fillText("⚡ Carte de Solde ⚡", width / 2, 80);
 
-    // Name
+    // Nom de l'utilisateur
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "bold 32px Arial";
     ctx.textAlign = "left";
-    ctx.fillText(`⚡ ${name}`, 200, 160);
+    ctx.fillText(`💎 ${name}`, 200, 160);
 
-    // User ID
+    // ID utilisateur
     ctx.font = "22px Arial";
     ctx.fillStyle = "#AAAAAA";
-    ctx.fillText(`⚡ ${targetID}`, 200, 200);
+    ctx.fillText(`🆔 ${targetID}`, 200, 200);
 
-    // Balance
+    // Solde
     ctx.font = "bold 44px Arial";
     ctx.fillStyle = "#00FF7F";
     ctx.textAlign = "center";
@@ -160,7 +163,7 @@ module.exports = {
     fs.writeFileSync(filePath, canvas.toBuffer("image/png"));
 
     return message.reply({
-      body: `⚡Balance info for ${name} ⚡`,
+      body: `⚡ Infos de solde pour ${name} ⚡`,
       attachment: fs.createReadStream(filePath)
     });
   }

@@ -82,7 +82,7 @@ module.exports = {
 
         for(const cat of Object.keys(categories).sort()) {
           const list = categories[cat].sort().map(c=>`• ${toAZStyle(c)}`).join("  ");
-          body += `🍓 ${cat}\n${list || "𝐍𝐨 𝐜𝐨𝐦𝐦𝐚𝐧𝐝𝐬"}\n\n`;
+          body += `🍂 ${cat}\n${list || "𝐍𝐨 𝐜𝐨𝐦𝐦𝐚𝐧𝐝𝐬"}\n\n`;
         }
 
         body += `📊 𝐓𝐨𝐭𝐚𝐥 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬: ${commands.size}\n`;

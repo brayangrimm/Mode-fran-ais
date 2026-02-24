@@ -84,16 +84,16 @@ const handleAIRequest = async (api, event, userInput, message, isReply = false) 
 
     // Remplacer Shizu / Shizuka par Christus AI ou Christus Bot
     finalReply = finalReply
-      .replace(/🎀\s*𝗦𝗵𝗶𝘇𝘂/gi, "🗿 𝐂𝐇𝐑𝐈𝐒𝐓𝐔𝐒")
-      .replace(/Shizu AI/gi, "Christus AI")
-      .replace(/Shizuka AI/gi, "Christus AI")
-      .replace(/Shizuka/gi, "Christus AI")
-      .replace(/Shizu/gi, "Christus AI");
+      .replace(/🎀\s*𝗦𝗵𝗶𝘇𝘂/gi, "(◕‿◕) 𝑪𝑨𝑴𝑰𝑳𝑨 𝑩𝑶𝑻")
+      .replace(/Shizu AI/gi, "brayan AI")
+      .replace(/Shizuka AI/gi, "Brayan AI")
+      .replace(/Shizuka/gi, "Brayan AI")
+      .replace(/Shizu/gi, "Brayan AI");
 
     // Phrase d’introduction transformée
     finalReply = finalReply.replace(
       /Je suis Shizuka AI, un assistant intelligent, poli et utile créé par Christus\./gi,
-      "Je suis Christus AI, un assistant intelligent, poli et utile créé par Christus."
+      "Je suis Camila AI, une assistante intelligente, polie et utile créé par Stack's."
     );
     // ---------------------------------------------------------------------
 

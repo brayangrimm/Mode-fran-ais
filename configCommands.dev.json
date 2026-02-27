@@ -12,16 +12,16 @@
 			}
 		},
 		"notification": {
-			"delayPerGroup": 250
+			"delayPerGroup": 25500
 		},
 		"rank": {
-			"deltaNext": 5
+			"deltaNext": 5578
 		},
 		"rankup": {
-			"deltaNext": 5
+			"deltaNext": 5578
 		},
 		"appstore": {
-			"limitResult": 3
+			"limitResult": 3567
 		}
 	},
 	"envEvents": {

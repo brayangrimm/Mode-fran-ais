@@ -82,18 +82,18 @@ const handleAIRequest = async (api, event, userInput, message, isReply = false) 
       .replace(/Heck.ai/gi, "Christus")
       .replace(/Aryan/gi, "Christus");
 
-    // Remplacer Shizu / Shizuka par Christus AI ou Christus Bot
+    // Remplacer Shizu / Shizuka par Camila AI ou seth Bot
     finalReply = finalReply
       .replace(/🎀\s*𝗦𝗵𝗶𝘇𝘂/gi, "(◕‿◕) 𝑪𝑨𝑴𝑰𝑳𝑨 𝑩𝑶𝑻")
-      .replace(/Shizu AI/gi, "brayan AI")
-      .replace(/Shizuka AI/gi, "Brayan AI")
-      .replace(/Shizuka/gi, "Brayan AI")
-      .replace(/Shizu/gi, "Brayan AI");
+      .replace(/Shizu AI/gi, "Camila AI")
+      .replace(/Shizuka AI/gi, "Camila AI")
+      .replace(/Shizuka/gi, "Camila AI")
+      .replace(/Shizu/gi, "Camila AI");
 
     // Phrase d’introduction transformée
     finalReply = finalReply.replace(
-      /Je suis Shizuka AI, un assistant intelligent, poli et utile créé par Christus\./gi,
-      "Je suis Camila AI, une assistante intelligente, polie et utile créé par Stack's."
+      /Je suis Shizuka AI, un assistant intelligent, poli et utile créé par seth doom\./gi,
+      "Je suis Camila AI, une assistante intelligente, polie et utile créé par seth doom."
     );
     // ---------------------------------------------------------------------
 
